@@ -1,0 +1,225 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/visionmedia/node-gify#readme"
+
+    >gify (v0.2.0)</a>
+</h1>
+<h4>Convert videos to animated gifs</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.gify">module gify</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gify.gify">
+            function <span class="apidocSignatureSpan"></span>gify
+            <span class="apidocSignatureSpan">(input, output, opts, fn)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gify.toString">
+            function <span class="apidocSignatureSpan">gify.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.gify.toString">module gify.toString</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.gify.toString.toString">
+            function <span class="apidocSignatureSpan">gify.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.gify" id="apidoc.module.gify">module gify</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.gify.gify" id="apidoc.element.gify.gify">
+        function <span class="apidocSignatureSpan"></span>gify
+        <span class="apidocSignatureSpan">(input, output, opts, fn)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function gify(input, output, opts, fn) {
+  if (!input) throw new Error(&#x27;input filename required&#x27;);
+  if (!output) throw new Error(&#x27;output filename required&#x27;);
+
+  // options
+  if (&#x27;function&#x27; == typeof opts) {
+    fn = opts;
+    opts = {};
+  } else {
+    opts = opts || {};
+  }
+
+  // dims
+  var w = opts.width;
+  var h = opts.height;
+  var rate = opts.rate || 10;
+  var delay = opts.delay || &#x27;auto&#x27;;
+
+  // auto delay
+  if (&#x27;auto&#x27; == delay) {
+    delay = 1000 / rate / 10 | 0;
+  }
+
+  // scale
+  var scale;
+  if (w) scale = w + &#x27;:-1&#x27;;
+  else if (h) scale = &#x27;-1:&#x27; + h;
+  else scale = &#x27;500:-1&#x27;;
+
+  // tmpfile(s)
+  var id = uid(10);
+  var dir = &#x27;/tmp/&#x27; + id;
+  var tmp  = dir + &#x27;/%04d.png&#x27;;
+
+  function gc(err) {
+    debug(&#x27;remove %s&#x27;, dir);
+    exec(&#x27;rm -fr &#x27; + dir);
+    fn(err);
+  }
+
+  debug(&#x27;mkdir -p %s&#x27;, dir);
+  mkdirp(dir, function(err){
+    if (err) return fn(err);
+
+    // convert to gif
+    var cmd = [&#x27;ffmpeg&#x27;];
+    cmd.push(&#x27;-i&#x27;, input);
+    cmd.push(&#x27;-filter:v&#x27;, &#x27;scale=&#x27; + scale);
+    cmd.push(&#x27;-r&#x27;, String(rate));
+    if (opts.start) cmd.push(&#x27;-ss&#x27;, String(opts.start));
+    if (opts.duration) cmd.push(&#x27;-t&#x27;, String(opts.duration));
+    cmd.push(tmp);
+    cmd = escape(cmd);
+
+    debug(&#x27;exec `%s`&#x27;, cmd);
+    exec(cmd, function(err){
+      if (err) return gc(err);
+      var cmd;
+
+      cmd = [&#x27;gm&#x27;, &#x27;convert&#x27;];
+      cmd.push(&#x27;-delay&#x27;, String(delay || 0));
+      cmd.push(&#x27;-loop&#x27;, &#x27;0&#x27;);
+      cmd.push(&#x27;/tmp/&#x27; + id + &#x27;/*.png&#x27;);
+      cmd.push(output);
+      cmd = escape(cmd);
+
+      debug(&#x27;exec `%s`&#x27;, cmd);
+      exec(cmd, gc);
+    });
+  });
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.gify.toString" id="apidoc.element.gify.toString">
+        function <span class="apidocSignatureSpan">gify.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">toString = function () {
+    return text;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.gify.toString" id="apidoc.module.gify.toString">module gify.toString</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.gify.toString.toString" id="apidoc.element.gify.toString.toString">
+        function <span class="apidocSignatureSpan">gify.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function toString() { [native code] }</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
