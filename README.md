@@ -1,4 +1,7 @@
-# api documentation for  [gify (v0.2.0)](https://github.com/visionmedia/node-gify#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-gify.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-gify) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-gify.svg)](https://travis-ci.org/npmdoc/node-npmdoc-gify)
+# npmdoc-gify
+
+#### basic api documentation for  [gify (v0.2.0)](https://github.com/visionmedia/node-gify#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-gify.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-gify) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-gify.svg)](https://travis-ci.org/npmdoc/node-npmdoc-gify)
+
 #### Convert videos to animated gifs
 
 [![NPM](https://nodei.co/npm/gify.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/gify)
